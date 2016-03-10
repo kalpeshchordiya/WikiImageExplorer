@@ -39,8 +39,8 @@
 
             <ImageView
                 android:id="@+id/processing_image_view"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="@dimen/dm_64"
+                android:layout_height="@dimen/dm_64"
                 android:layout_gravity="center"
                 android:src="@drawable/loading"
                 android:visibility="gone"/>

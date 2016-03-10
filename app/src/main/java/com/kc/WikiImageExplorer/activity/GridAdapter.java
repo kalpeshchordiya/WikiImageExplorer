@@ -90,7 +90,7 @@ public class GridAdapter extends BaseAdapter {
         Log.d(TAG, "Position = " + position + " Query = " + pageObj);
         if (pageObj != null && pageObj.getThumbnail() != null) {
             Picasso.with(context).load(pageObj.getThumbnail().getSource()).placeholder(R.drawable
-                    .image_loading_1)
+                    .image_loader)
                     .into(viewHolder.pageThumbnail);
         } else {
             Picasso.with(context).load(R.drawable.no_image_available).into(viewHolder.pageThumbnail);
