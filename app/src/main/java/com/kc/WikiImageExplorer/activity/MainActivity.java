@@ -143,7 +143,8 @@ public class MainActivity extends ActionBarActivity {
                 // Send Delayed Message, so that if user updates search string before this message gets
                 // delivered we remove this message from message queue.
                 if (Utility.isConnected(this)) {
-                    showHelpView(String.format(getResources().getString(R.string.searching_text), mSearchText));
+                    showHelpView(String.format(getResources().getString(R.string.searching_text),
+                            mSearchText));
                     startProgressAnimation(true);
                     mHandler.removeMessages(WIKI_SEARCH_DELAYED_MESSAGE);
                     Message msg = new Message();
@@ -156,6 +157,11 @@ public class MainActivity extends ActionBarActivity {
             }
         } else {
             if (Utility.isConnected(this)) {
+                mHandler.removeMessages(WIKI_SEARCH_DELAYED_MESSAGE);
+                if (mRequestId != -1) {
+                    ControllerManager.getInstance().cancelRequest(mRequestId);
+                    mRequestId = -1;
+                }
                 showHelpView("");
             } else {
                 showHelpView(getResources().getString(R.string.network_not_available));
@@ -172,8 +178,7 @@ public class MainActivity extends ActionBarActivity {
         }
 
         public void onTextChanged(CharSequence s, int start, int before, int count) {
-            if (mTitleSearchET.getText() != null
-                    && mSearchText.equals(mTitleSearchET.getText().toString())) {
+            if (mTitleSearchET.getText() != null && mSearchText.equals(mTitleSearchET.getText().toString())) {
                 return;
             }
             mWikiSearchResponse = null;
