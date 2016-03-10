@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">Wiki Image Explorer</string>
+    <string name="page_title_text">Page Title</string>
+    <string name="search_hint_text">Enter text to search images</string>
+    <string name="searching_text">Searching images for \"%1$s\" on English Wikipedia.</string>
+    <string name="no_data_found_text">No Images found for \"%1$s\" on English
+        Wikipedia.\nPlease try with different text string.</string>
+    <string name="network_not_available">Network not available.\n
+        Enable network settings and try again.</string>
+    <string name="error_getting_data_text">Error while getting data.\nPlease try again.</string>
+    <string name="title_activity_webview">WebViewActivity</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="loading_page">Loading page in progress...</string>
+</resources>

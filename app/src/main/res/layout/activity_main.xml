@@ -1,0 +1,68 @@
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.kc.WikiImageExplorer.activity.MainActivity">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:id="@+id/edit_text_search_layout"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dm_10"
+            android:gravity="center"
+            android:padding="@dimen/dm_5">
+
+            <EditText
+                android:id="@+id/page_title_search_edit_text"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dm_48"
+                android:drawableRight="@drawable/cross"
+                android:hint="@string/search_hint_text"
+                android:imeOptions="actionDone"
+                android:padding="@dimen/dm_5"
+                android:singleLine="true"/>
+        </RelativeLayout>
+
+        <LinearLayout
+            android:id="@+id/help_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/edit_text_search_layout"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <ImageView
+                android:id="@+id/processing_image_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:src="@drawable/loading"
+                android:visibility="gone"/>
+
+            <TextView
+                android:id="@+id/searching_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:padding="@dimen/dm_15"
+                android:text="@string/searching_text"
+                android:textSize="22sp"
+                android:textStyle="bold"/>
+        </LinearLayout>
+
+        <GridView
+            android:id="@+id/page_thumnails_grid_view"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_below="@id/edit_text_search_layout"
+            android:horizontalSpacing="@dimen/dm_1"
+            android:numColumns="3"
+            android:verticalSpacing="@dimen/dm_1"/>
+    </RelativeLayout>
+</RelativeLayout>
