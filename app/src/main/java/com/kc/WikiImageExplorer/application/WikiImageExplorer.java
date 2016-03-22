@@ -1,9 +1,8 @@
 package com.kc.WikiImageExplorer.application;
 
 import android.app.Application;
-import android.content.Context;
 
-import com.kc.WikiImageExplorer.controller.ControllerManager;
+import com.kc.WikiImageExplorer.controller.VolleyManager;
 
 /**
  * Created by kalpesh.chordiya on 3/3/16.
@@ -14,6 +13,6 @@ public class WikiImageExplorer extends Application {
     public void onCreate() {
         super.onCreate();
         // Create ControllerManager instance.
-        ControllerManager.createInstance(getApplicationContext());
+        VolleyManager.createInstance(getApplicationContext());
     }
 }

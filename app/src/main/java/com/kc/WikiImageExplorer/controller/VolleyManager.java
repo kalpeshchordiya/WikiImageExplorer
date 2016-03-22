@@ -7,61 +7,55 @@ import android.os.Looper;
 import android.util.Log;
 
 import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.InputStreamRequest;
+import com.android.volley.toolbox.Volley;
 import com.kc.WikiImageExplorer.listener.WikiSearchListener;
-import com.kc.WikiImageExplorer.requests.WikiSearchRequest;
-import com.kc.WikiImageExplorer.transport.TransportManager;
 import com.kc.WikiImageExplorer.utils.Constants;
 
 import java.lang.ref.WeakReference;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class ControllerManager {
-    private static final String TAG = ControllerManager.class.getSimpleName();
+public class VolleyManager {
+    private static final String TAG = VolleyManager.class.getSimpleName();
 
     private static int requestId = 0;
-
+    private RequestQueue mRequestQueue = null;
     private Context mContext;
 
     private ConcurrentHashMap<Integer, ControllerCallback> mListenersMap = new
             ConcurrentHashMap<Integer, ControllerCallback>();
 
-    private TransportManager mTransportManager = null;
-
     private MainThread mhThread = null;
 
     MainHandler mHandler = null;
 
-    private static volatile ControllerManager controllerInstance;
+    private static volatile VolleyManager mInstance;
 
-    public static ControllerManager getInstance() {
-        if (null == controllerInstance) {
+    public static VolleyManager getInstance() {
+        if (null == mInstance) {
             throw new ExceptionInInitializerError();
         }
-        return controllerInstance;
-    }
-
-    private void initModules() {
-        mTransportManager = (TransportManager) new TransportManager(mContext, getMainHandler());
+        return mInstance;
     }
 
     // Should be called only Once
-    public static ControllerManager createInstance(Context context) {
-        if (null != controllerInstance) {
+    public static VolleyManager createInstance(Context context) {
+        if (null != mInstance) {
             throw new ExceptionInInitializerError();
         }
-        synchronized (ControllerManager.class) {
-            if (null != controllerInstance) {
+        synchronized (VolleyManager.class) {
+            if (null != mInstance) {
                 throw new ExceptionInInitializerError();
             }
-            controllerInstance = new ControllerManager(context);
-            return controllerInstance;
+            mInstance = new VolleyManager(context);
+            return mInstance;
         }
     }
 
-    private ControllerManager(Context context) {
+    private VolleyManager(Context context) {
         mContext = context;
         initialize();
-        initModules();
     }
 
     public synchronized int getNextRequestId() {
@@ -118,12 +112,10 @@ public class ControllerManager {
 
     public int cancelRequest(int requestId) {
         removeListener(requestId);
-        mTransportManager.cancelPendingRequests(requestId);
+        if (getRequestQueue() != null) {
+            getRequestQueue().cancelAll(requestId);
+        }
         return 0;
-    }
-
-    public TransportManager getTransportManager() {
-        return mTransportManager;
     }
 
     /**
@@ -131,7 +123,7 @@ public class ControllerManager {
      */
     private void initialize() {
         Log.d(TAG, "Initialization started ..........");
-        mhThread = new MainThread("Lime ControllerManager");
+        mhThread = new MainThread("WikiExplorer VolleyManager");
         mhThread.start();
         mHandler = new MainHandler(this, mhThread.getLooper());
         Log.d(TAG, "Initialization done.");
@@ -145,16 +137,12 @@ public class ControllerManager {
 
     static class MainHandler extends Handler {
 
-        private final WeakReference<ControllerManager> activityInstance;
+        private final WeakReference<VolleyManager> activityInstance;
 
-        public MainHandler(ControllerManager instance, Looper looper) {
+        public MainHandler(VolleyManager instance, Looper looper) {
             super(looper);
-            activityInstance = new WeakReference<ControllerManager>(instance);
+            activityInstance = new WeakReference<VolleyManager>(instance);
         }
-    }
-
-    public MainHandler getMainHandler() {
-        return mHandler;
     }
 
     public int sendWikiSearch(String keyword, int noOfPages, int thumbnailSize,
@@ -166,11 +154,22 @@ public class ControllerManager {
         final int requestId = getNextRequestId();
         // Create new listener for response and error
         WikiSearchListener wikiSearchListener = new WikiSearchListener(requestId);
-        WikiSearchRequest request = new WikiSearchRequest(Request.Method.GET, url,
+
+        InputStreamRequest request = new InputStreamRequest(Request.Method.GET, url,
                 wikiSearchListener, wikiSearchListener);
         Log.i(TAG, "Sending sendGetWikiPages Request " + requestId);
-        mTransportManager.execute(request, requestId);
+
+        request.setTag(requestId);
+        getRequestQueue().add(request);
+
         addListener(requestId, listener);
         return requestId;
+    }
+
+    private RequestQueue getRequestQueue() {
+        if (mRequestQueue == null) {
+            mRequestQueue = Volley.newRequestQueue(mContext, null, mHandler);
+        }
+        return mRequestQueue;
     }
 }

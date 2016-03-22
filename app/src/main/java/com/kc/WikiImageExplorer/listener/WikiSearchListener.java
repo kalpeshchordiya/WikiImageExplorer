@@ -7,7 +7,7 @@ import com.android.volley.Response.Listener;
 import com.android.volley.VolleyError;
 import com.google.gson.Gson;
 import com.kc.WikiImageExplorer.controller.ControllerCallback;
-import com.kc.WikiImageExplorer.controller.ControllerManager;
+import com.kc.WikiImageExplorer.controller.VolleyManager;
 import com.kc.WikiImageExplorer.model.WikiSearchResponse;
 import com.kc.WikiImageExplorer.utils.Constants;
 
@@ -29,8 +29,9 @@ public class WikiSearchListener implements Listener<byte[]>, ErrorListener {
     public void onErrorResponse(VolleyError error) {
         Log.d(TAG, "onErrorResponse Data = " + error.getMessage());
 
-        ControllerManager controllerManager = ControllerManager.getInstance();
-        ControllerCallback controllerCallback = controllerManager.getControllerCallback(mRequestId);
+        final VolleyManager volleyManager = VolleyManager.getInstance();
+        final ControllerCallback controllerCallback = volleyManager.getControllerCallback
+                (mRequestId);
         WikiSearchResponse resp = new WikiSearchResponse();
         resp.setErrorCode(Constants.ERROR_CODE);
         resp.setErrorDescription(error.getMessage());
@@ -38,7 +39,7 @@ public class WikiSearchListener implements Listener<byte[]>, ErrorListener {
         // Send callback to all the listeners.
         if (controllerCallback != null) {
             controllerCallback.onErrorResponseProxy(mRequestId, 0, resp);
-            controllerManager.removeListener(mRequestId);
+            volleyManager.removeListener(mRequestId);
         }
     }
 
@@ -65,8 +66,8 @@ public class WikiSearchListener implements Listener<byte[]>, ErrorListener {
             wikiSearchResponse = new WikiSearchResponse();
             wikiSearchResponse.setErrorDescription("Invalid Response");
         }
-        final ControllerManager controllerManager = ControllerManager.getInstance();
-        final ControllerCallback controllerCallback = controllerManager.getControllerCallback
+        final VolleyManager volleyManager = VolleyManager.getInstance();
+        final ControllerCallback controllerCallback = volleyManager.getControllerCallback
                 (mRequestId);
         // Send callback to all the listeners.
         if (controllerCallback != null) {
@@ -76,7 +77,7 @@ public class WikiSearchListener implements Listener<byte[]>, ErrorListener {
             } else {
                 controllerCallback.onSuccessResponseProxy(mRequestId, 0, wikiSearchResponse);
             }
-            controllerManager.removeListener(mRequestId);
+            volleyManager.removeListener(mRequestId);
         }
     }
 }

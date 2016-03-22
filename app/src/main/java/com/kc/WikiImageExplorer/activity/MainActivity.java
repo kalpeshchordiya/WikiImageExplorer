@@ -3,10 +3,16 @@ package com.kc.WikiImageExplorer.activity;
 import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.util.Pair;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -15,11 +21,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.view.animation.GridLayoutAnimationController;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.AbsListView;
 import android.widget.EditText;
-import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -27,7 +30,7 @@ import android.widget.Toast;
 
 import com.kc.WikiImageExplorer.R;
 import com.kc.WikiImageExplorer.controller.ControllerCallback;
-import com.kc.WikiImageExplorer.controller.ControllerManager;
+import com.kc.WikiImageExplorer.controller.VolleyManager;
 import com.kc.WikiImageExplorer.listener.ItemClickListener;
 import com.kc.WikiImageExplorer.model.PageObj;
 import com.kc.WikiImageExplorer.model.WikiSearchResponse;
@@ -38,11 +41,11 @@ import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
     private static final int WIKI_SEARCH_DELAYED_MESSAGE = 1000;
-    private GridView mWikiDetailsGV;
+    private RecyclerView mDetailsRecyclerView;
     private EditText mTitleSearchET;
     private TextView mSearchingTV;
     private LinearLayout mHelpLayout;
@@ -51,7 +54,7 @@ public class MainActivity extends ActionBarActivity {
     private int mRequestId = -1;
     private boolean mHelpTextAnimNextTime = true;
     private Handler mHandler;
-    private GridAdapter mAppGridAdapter;
+    private RecyclerViewAdapter mRecyclerAdapter;
     private Map<String, PageObj> mEmptyWikiSearchList = new HashMap<String, PageObj>();
     private WikiSearchResponse mWikiSearchResponse;
     private WikiSearchRetainerFragment mWikiSearchRetainerFragment;
@@ -74,7 +77,7 @@ public class MainActivity extends ActionBarActivity {
 
     // Initialize View Parameters and their required listeners for functionality
     private void initView() {
-        mWikiDetailsGV = (GridView) findViewById(R.id.page_thumnails_grid_view);
+        mDetailsRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         mSearchingTV = (TextView) findViewById(R.id.searching_text_view);
         mTitleSearchET = (EditText) findViewById(R.id.page_title_search_edit_text);
         mHelpLayout = (LinearLayout) findViewById(R.id.help_layout);
@@ -83,9 +86,16 @@ public class MainActivity extends ActionBarActivity {
         mTitleSearchET.addTextChangedListener(new InputValidator());
         mHandler = new MyHandler(this);
 
-        mAppGridAdapter = new GridAdapter(mContext, mEmptyWikiSearchList,
+        GridLayoutManager lLayout = new GridLayoutManager(MainActivity.this, 2);
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            lLayout.setSpanCount(3);
+        }
+
+        mDetailsRecyclerView.setLayoutManager(lLayout);
+
+        mRecyclerAdapter = new RecyclerViewAdapter(mContext, mEmptyWikiSearchList,
                 mItemClickListener);
-        mWikiDetailsGV.setAdapter(mAppGridAdapter);
+        mDetailsRecyclerView.setAdapter(mRecyclerAdapter);
 
         // Create the fragment to store large data,
         // This data is to be used in case of Activity is recreated by android system.
@@ -117,17 +127,12 @@ public class MainActivity extends ActionBarActivity {
 
         // Hide keyboard when GridView is scrolled by user. Here user wants to see more data from
         // GridView, so keyboard is not needed and we hide it.
-        mWikiDetailsGV.setOnScrollListener(new AbsListView.OnScrollListener() {
+        mDetailsRecyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
-            public void onScrollStateChanged(AbsListView view, int scrollState) {
+            public void onScrollStateChanged(RecyclerView view, int scrollState) {
                 InputMethodManager imm = (InputMethodManager) getSystemService(Context
                         .INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-            }
-
-            @Override
-            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount,
-                                 int totalItemCount) {
             }
         });
     }
@@ -159,7 +164,7 @@ public class MainActivity extends ActionBarActivity {
             if (Utility.isConnected(this)) {
                 mHandler.removeMessages(WIKI_SEARCH_DELAYED_MESSAGE);
                 if (mRequestId != -1) {
-                    ControllerManager.getInstance().cancelRequest(mRequestId);
+                    VolleyManager.getInstance().cancelRequest(mRequestId);
                     mRequestId = -1;
                 }
                 showHelpView("");
@@ -195,9 +200,9 @@ public class MainActivity extends ActionBarActivity {
     // We show HelpView, as we do not have data to shown GridView so we hide GridView.
     private void showHelpView(String helpText) {
         Log.d(TAG, "Show Help View with "+helpText);
-        mWikiDetailsGV.setVisibility(View.GONE);
-        mWikiDetailsGV.smoothScrollToPosition(0);
-        mAppGridAdapter.updateWikiPages(mEmptyWikiSearchList);
+        mDetailsRecyclerView.setVisibility(View.GONE);
+        mDetailsRecyclerView.smoothScrollToPosition(0);
+        mRecyclerAdapter.updateWikiPages(mEmptyWikiSearchList);
         if (!TextUtils.isEmpty(helpText)) {
             mSearchingTV.setText(helpText);
             mHelpLayout.setVisibility(View.VISIBLE);
@@ -215,7 +220,7 @@ public class MainActivity extends ActionBarActivity {
     // Show GridView and hide Help View
     private void showGridView() {
         mHelpLayout.setVisibility(View.GONE);
-        mWikiDetailsGV.setVisibility(View.VISIBLE);
+        mDetailsRecyclerView.setVisibility(View.VISIBLE);
     }
 
     // Start or Stop progress animation in HelpView depending on started parameter.
@@ -258,15 +263,15 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
-    // Send Wiki Search request through ControllerManager with search Text entered by user.
+    // Send Wiki Search request through VolleyManager with search Text entered by user.
     private void sendWikiSearchRequest(String searchText) {
         Log.d(TAG, "ProcessWikiSearch = " + searchText);
         if (Utility.isConnected(this)) {
             if (mRequestId != -1) {
-                ControllerManager.getInstance().cancelRequest(mRequestId);
+                VolleyManager.getInstance().cancelRequest(mRequestId);
                 mRequestId = -1;
             }
-            mRequestId = ControllerManager.getInstance().sendWikiSearch(searchText, Constants
+            mRequestId = VolleyManager.getInstance().sendWikiSearch(searchText, Constants
                     .NO_OF_PAGES, Constants.THUMBNAIL_SIZE, mWikiSearchCallback);
         } else {
             showHelpView(getResources().getString(R.string.network_not_available));
@@ -301,11 +306,7 @@ public class MainActivity extends ActionBarActivity {
                 null && response.getQuery().getPages().size() > 0) {
             Log.d(TAG, "Wiki Search Response size = " + response.getQuery().getPages().size());
             showGridView();
-            mAppGridAdapter.updateWikiPages(response.getQuery().getPages());
-            Animation animation = AnimationUtils.loadAnimation(mContext, R.anim.fade_in);
-            GridLayoutAnimationController controller = new GridLayoutAnimationController
-                    (animation, .2f, .2f);
-            mWikiDetailsGV.setLayoutAnimation(controller);
+            mRecyclerAdapter.updateWikiPages(response.getQuery().getPages());
         } else {
             showHelpView(String.format(getResources().getString(R.string.no_data_found_text),
                     mSearchText));
@@ -314,15 +315,25 @@ public class MainActivity extends ActionBarActivity {
 
     private ItemClickListener mItemClickListener = new ItemClickListener() {
         @Override
-        public void onItemClicked(PageObj pageObj) {
+        public void onItemClicked(View view, PageObj pageObj) {
             if (Utility.isConnected(mContext)) {
                 if (pageObj != null) {
-                    // Launch WebView activity with title and pageId
-                    Intent intent = new Intent(mContext, WebViewActivity.class);
+
+                    // Send Shared Image and Title View for across activity animations.
+                    ImageView im = (ImageView) view.findViewById(R.id.page_thumbnail);
+                    TextView tv = (TextView) view.findViewById(R.id.page_title);
+                    Pair<View, String> imagePair = Pair.create((View) im, "cardImage");
+                    Pair<View, String> titleTextPair = Pair.create((View) tv,
+                            "pageTitleTransition");
+                    ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(MainActivity
+                            .this, imagePair, titleTextPair);
+                    Intent intent = new Intent(MainActivity.this, WebViewActivity.class);
                     intent.putExtra(Constants.WIKI_PAGE_URL, Constants.WIKI_READ_URL_WITH_PAGE_ID
                             + pageObj.getPageid());
                     intent.putExtra(Constants.WIKI_PAGE_TITLE, pageObj.getTitle());
-                    startActivity(intent);
+                    if (pageObj.getThumbnail() != null)
+                        intent.putExtra(Constants.WIKI_PAGE_THUMBNAIL, pageObj.getThumbnail().getSource());
+                    ActivityCompat.startActivity(MainActivity.this, intent, options.toBundle());
                 }
             } else {
                 Toast.makeText(mContext, getResources().getString(R.string.network_not_available)
@@ -338,7 +349,7 @@ public class MainActivity extends ActionBarActivity {
             mWikiSearchRetainerFragment.setWikiSearchData(mWikiSearchResponse);
             mWikiSearchRetainerFragment.setSearchText(mSearchText);
             if (mRequestId != -1) {
-                ControllerManager.getInstance().cancelRequest(mRequestId);
+                VolleyManager.getInstance().cancelRequest(mRequestId);
             }
         }
         mHandler.removeMessages(WIKI_SEARCH_DELAYED_MESSAGE);

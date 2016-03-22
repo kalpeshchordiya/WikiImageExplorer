@@ -5,7 +5,7 @@ package com.kc.WikiImageExplorer.utils;
  */
 public class Constants {
     public static int ERROR_CODE = 100;
-    public static int THUMBNAIL_SIZE = 100;
+    public static int THUMBNAIL_SIZE = 200;
     public static int NO_OF_PAGES = 50;
     public static String WIKI_IMAGE_SEARCH_URL = "https://en.wikipedia.org/w/api" +
             ".php?action=query&prop=pageimages&format=json&piprop=thumbnail&pilimit=50&generator" +
@@ -14,4 +14,5 @@ public class Constants {
     public static String WIKI_PAGE_RETAINER_FRAGMENT = "RetainerFragment";
     public static String WIKI_PAGE_URL = "LaunchUrl";
     public static String WIKI_PAGE_TITLE = "PageTitle";
+    public static String WIKI_PAGE_THUMBNAIL = "Thumbnail";
 }
