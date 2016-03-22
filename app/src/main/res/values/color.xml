@@ -3,5 +3,9 @@
     <color name="grey_white">#DDDDDD</color>
     <color name="full_white">#FFFFFF</color>
     <color name="black">#111111</color>
+    <color name="bar_color_0">#7986cb</color>
+    <color name="bar_color_1">#43a047</color>
+    <color name="bar_color_2">#ef6c00</color>
+    <color name="bar_color_3">#111111</color>
 
 </resources>

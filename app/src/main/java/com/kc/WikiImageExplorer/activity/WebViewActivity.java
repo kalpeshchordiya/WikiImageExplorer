@@ -5,6 +5,7 @@ import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.transition.ChangeBounds;
 import android.transition.Transition;
@@ -45,10 +46,12 @@ public class WebViewActivity extends AppCompatActivity {
     private void initView() {
         String title = getIntent().getStringExtra(Constants.WIKI_PAGE_TITLE);
         String thumbnail = getIntent().getStringExtra(Constants.WIKI_PAGE_THUMBNAIL);
+        int pagePos = getIntent().getIntExtra(Constants.WIKI_PAGE_POS, 0);
         mProgressbar = (ProgressBar) findViewById(R.id.progress_bar);
         mLoadingLayout = (LinearLayout) findViewById(R.id.loading_layout);
         mWebView = (WebView) findViewById(R.id.wiki_webView);
         TextView tv = (TextView) findViewById(R.id.page_title);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         ImageView thumbnailImage = (ImageView) findViewById(R.id.page_thumbnail);
         if (!TextUtils.isEmpty(thumbnail)) {
             Glide.with(this).load(thumbnail).placeholder(R.drawable.image_loader).into
@@ -56,6 +59,14 @@ public class WebViewActivity extends AppCompatActivity {
         } else {
             Glide.with(this).load(R.drawable.no_image_available).into(thumbnailImage);
         }
+
+        int modPos = pagePos % 3;
+        if (modPos == 0)
+            toolbar.setBackgroundColor(getResources().getColor(R.color.bar_color_0));
+        else if (modPos == 1)
+            toolbar.setBackgroundColor(getResources().getColor(R.color.bar_color_1));
+        else if (modPos == 2)
+            toolbar.setBackgroundColor(getResources().getColor(R.color.bar_color_2));
         tv.setText(title);
     }
 

@@ -9,7 +9,7 @@
         style="@style/MaterialAnimations.TextAppearance.Title"
         android:layout_width="match_parent"
         android:layout_height="?android:attr/actionBarSize"
-        android:background="@android:color/holo_green_light"
+        android:background="#3d5afe"
         android:elevation="@dimen/dm_5">
 
         <TextView
@@ -42,6 +42,7 @@
                 android:hint="@string/search_hint_text"
                 android:imeOptions="actionDone"
                 android:padding="@dimen/dm_5"
+                android:background="@drawable/edit_text_background"
                 android:singleLine="true"/>
         </RelativeLayout>
 
@@ -51,6 +52,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/edit_text_search_layout"
             android:gravity="center"
+            android:layout_marginTop="@dimen/dm_15"
             android:orientation="vertical"
             android:visibility="gone">
 

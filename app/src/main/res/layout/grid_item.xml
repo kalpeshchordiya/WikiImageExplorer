@@ -31,7 +31,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/page_thumbnail"
-            android:background="@android:color/holo_green_light"
+            android:background="#7c4dff"
             android:ellipsize="end"
             android:gravity="center"
             android:lines="2"

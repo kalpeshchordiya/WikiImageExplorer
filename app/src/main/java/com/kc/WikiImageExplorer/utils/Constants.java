@@ -15,4 +15,5 @@ public class Constants {
     public static String WIKI_PAGE_URL = "LaunchUrl";
     public static String WIKI_PAGE_TITLE = "PageTitle";
     public static String WIKI_PAGE_THUMBNAIL = "Thumbnail";
+    public static String WIKI_PAGE_POS = "PagePos";
 }

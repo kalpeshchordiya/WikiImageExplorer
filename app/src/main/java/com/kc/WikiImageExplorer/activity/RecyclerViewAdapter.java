@@ -63,6 +63,16 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         }
         if (pageObj != null && pageObj.getTitle() != null) {
             recyclerViewHolders.pageTitle.setText(pageObj.getTitle());
+            int modPos = position % 3;
+            if (modPos == 0)
+                recyclerViewHolders.pageTitle.setBackgroundColor(context.getResources()
+                        .getColor(R.color.bar_color_0));
+            else if (modPos == 1)
+                recyclerViewHolders.pageTitle.setBackgroundColor(context.getResources()
+                        .getColor(R.color.bar_color_1));
+            else if (modPos == 2)
+                recyclerViewHolders.pageTitle.setBackgroundColor(context.getResources()
+                        .getColor(R.color.bar_color_2));
         }
     }
 
@@ -91,7 +101,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 public void onClick(View v) {
                     if (mItemClickListener != null) {
                         mItemClickListener.onItemClicked(itemView, mWikiPages.get
-                                (mKeys[getPosition()]));
+                                (mKeys[getPosition()]), getPosition());
                     }
                 }
             });

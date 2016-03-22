@@ -16,8 +16,8 @@ import com.kc.WikiImageExplorer.utils.Constants;
 import java.lang.ref.WeakReference;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class VolleyManager {
-    private static final String TAG = VolleyManager.class.getSimpleName();
+public class NetworkRequestManager {
+    private static final String TAG = NetworkRequestManager.class.getSimpleName();
 
     private static int requestId = 0;
     private RequestQueue mRequestQueue = null;
@@ -30,9 +30,9 @@ public class VolleyManager {
 
     MainHandler mHandler = null;
 
-    private static volatile VolleyManager mInstance;
+    private static volatile NetworkRequestManager mInstance;
 
-    public static VolleyManager getInstance() {
+    public static NetworkRequestManager getInstance() {
         if (null == mInstance) {
             throw new ExceptionInInitializerError();
         }
@@ -40,20 +40,20 @@ public class VolleyManager {
     }
 
     // Should be called only Once
-    public static VolleyManager createInstance(Context context) {
+    public static NetworkRequestManager createInstance(Context context) {
         if (null != mInstance) {
             throw new ExceptionInInitializerError();
         }
-        synchronized (VolleyManager.class) {
+        synchronized (NetworkRequestManager.class) {
             if (null != mInstance) {
                 throw new ExceptionInInitializerError();
             }
-            mInstance = new VolleyManager(context);
+            mInstance = new NetworkRequestManager(context);
             return mInstance;
         }
     }
 
-    private VolleyManager(Context context) {
+    private NetworkRequestManager(Context context) {
         mContext = context;
         initialize();
     }
@@ -123,7 +123,7 @@ public class VolleyManager {
      */
     private void initialize() {
         Log.d(TAG, "Initialization started ..........");
-        mhThread = new MainThread("WikiExplorer VolleyManager");
+        mhThread = new MainThread("WikiExplorer NetworkRequestManager");
         mhThread.start();
         mHandler = new MainHandler(this, mhThread.getLooper());
         Log.d(TAG, "Initialization done.");
@@ -137,11 +137,11 @@ public class VolleyManager {
 
     static class MainHandler extends Handler {
 
-        private final WeakReference<VolleyManager> activityInstance;
+        private final WeakReference<NetworkRequestManager> activityInstance;
 
-        public MainHandler(VolleyManager instance, Looper looper) {
+        public MainHandler(NetworkRequestManager instance, Looper looper) {
             super(looper);
-            activityInstance = new WeakReference<VolleyManager>(instance);
+            activityInstance = new WeakReference<NetworkRequestManager>(instance);
         }
     }
 

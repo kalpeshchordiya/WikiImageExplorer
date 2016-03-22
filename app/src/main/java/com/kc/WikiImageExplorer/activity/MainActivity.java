@@ -30,7 +30,7 @@ import android.widget.Toast;
 
 import com.kc.WikiImageExplorer.R;
 import com.kc.WikiImageExplorer.controller.ControllerCallback;
-import com.kc.WikiImageExplorer.controller.VolleyManager;
+import com.kc.WikiImageExplorer.controller.NetworkRequestManager;
 import com.kc.WikiImageExplorer.listener.ItemClickListener;
 import com.kc.WikiImageExplorer.model.PageObj;
 import com.kc.WikiImageExplorer.model.WikiSearchResponse;
@@ -164,7 +164,7 @@ public class MainActivity extends AppCompatActivity {
             if (Utility.isConnected(this)) {
                 mHandler.removeMessages(WIKI_SEARCH_DELAYED_MESSAGE);
                 if (mRequestId != -1) {
-                    VolleyManager.getInstance().cancelRequest(mRequestId);
+                    NetworkRequestManager.getInstance().cancelRequest(mRequestId);
                     mRequestId = -1;
                 }
                 showHelpView("");
@@ -263,15 +263,15 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    // Send Wiki Search request through VolleyManager with search Text entered by user.
+    // Send Wiki Search request through NetworkRequestManager with search Text entered by user.
     private void sendWikiSearchRequest(String searchText) {
         Log.d(TAG, "ProcessWikiSearch = " + searchText);
         if (Utility.isConnected(this)) {
             if (mRequestId != -1) {
-                VolleyManager.getInstance().cancelRequest(mRequestId);
+                NetworkRequestManager.getInstance().cancelRequest(mRequestId);
                 mRequestId = -1;
             }
-            mRequestId = VolleyManager.getInstance().sendWikiSearch(searchText, Constants
+            mRequestId = NetworkRequestManager.getInstance().sendWikiSearch(searchText, Constants
                     .NO_OF_PAGES, Constants.THUMBNAIL_SIZE, mWikiSearchCallback);
         } else {
             showHelpView(getResources().getString(R.string.network_not_available));
@@ -315,10 +315,9 @@ public class MainActivity extends AppCompatActivity {
 
     private ItemClickListener mItemClickListener = new ItemClickListener() {
         @Override
-        public void onItemClicked(View view, PageObj pageObj) {
+        public void onItemClicked(View view, PageObj pageObj, int position) {
             if (Utility.isConnected(mContext)) {
                 if (pageObj != null) {
-
                     // Send Shared Image and Title View for across activity animations.
                     ImageView im = (ImageView) view.findViewById(R.id.page_thumbnail);
                     TextView tv = (TextView) view.findViewById(R.id.page_title);
@@ -331,6 +330,7 @@ public class MainActivity extends AppCompatActivity {
                     intent.putExtra(Constants.WIKI_PAGE_URL, Constants.WIKI_READ_URL_WITH_PAGE_ID
                             + pageObj.getPageid());
                     intent.putExtra(Constants.WIKI_PAGE_TITLE, pageObj.getTitle());
+                    intent.putExtra(Constants.WIKI_PAGE_POS, position);
                     if (pageObj.getThumbnail() != null)
                         intent.putExtra(Constants.WIKI_PAGE_THUMBNAIL, pageObj.getThumbnail().getSource());
                     ActivityCompat.startActivity(MainActivity.this, intent, options.toBundle());
@@ -349,7 +349,7 @@ public class MainActivity extends AppCompatActivity {
             mWikiSearchRetainerFragment.setWikiSearchData(mWikiSearchResponse);
             mWikiSearchRetainerFragment.setSearchText(mSearchText);
             if (mRequestId != -1) {
-                VolleyManager.getInstance().cancelRequest(mRequestId);
+                NetworkRequestManager.getInstance().cancelRequest(mRequestId);
             }
         }
         mHandler.removeMessages(WIKI_SEARCH_DELAYED_MESSAGE);
