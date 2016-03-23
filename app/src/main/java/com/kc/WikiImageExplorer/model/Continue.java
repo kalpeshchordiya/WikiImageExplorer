@@ -7,7 +7,7 @@ import java.io.Serializable;
 /**
  * Created by kalpesh.chordiya on 4/3/16.
  */
-public class Continue implements Serializable{
+public class Continue implements Serializable {
 
     private String gpsoffset;
     @SerializedName("continue")
@@ -31,9 +31,7 @@ public class Continue implements Serializable{
 
     @Override
     public String toString() {
-        return "Continue{" +
-                "gpsoffset='" + gpsoffset + '\'' +
-                ", continue1='" + continue1 + '\'' +
-                '}';
+        return new StringBuilder("Continue{ gpsoffset ='").
+                append(gpsoffset).append(" continue1=").append(continue1).append("}").toString();
     }
 }

@@ -57,12 +57,9 @@ public class WikiSearchResponse implements Serializable {
 
     @Override
     public String toString() {
-        return "WikiPagesResponse{" +
-                "errorCode=" + errorCode +
-                ", errorDescription='" + errorDescription + '\'' +
-                ", batchcomplete='" + batchcomplete + '\'' +
-                ", continueObj=" + continueObj +
-                ", query=" + query +
-                '}';
+        return new StringBuilder("WikiPagesResponse { errorCode=").append(errorCode).append(", "
+                + "errorDescription=").append(errorDescription).append(", batchcomplete=").append
+                (batchcomplete).append(", continueObj=").append(continueObj).append(", " +
+                "query=").append(query).append("}").toString();
     }
 }

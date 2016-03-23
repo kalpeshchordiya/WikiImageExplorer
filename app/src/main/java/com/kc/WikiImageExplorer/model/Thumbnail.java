@@ -36,10 +36,7 @@ public class Thumbnail implements Serializable {
 
     @Override
     public String toString() {
-        return "Thumbnail{" +
-                "height='" + height + '\'' +
-                ", source='" + source + '\'' +
-                ", width='" + width + '\'' +
-                '}';
+        return new StringBuilder("Thumbnail { height=").append(height).append(", source=").append
+                (source).append(", width=").append(width).append("}").toString();
     }
 }

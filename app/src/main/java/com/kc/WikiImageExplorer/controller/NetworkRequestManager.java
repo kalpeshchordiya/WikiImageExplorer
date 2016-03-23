@@ -119,7 +119,7 @@ public class NetworkRequestManager {
     }
 
     /**
-     * Initialize core manager.
+     * Initialize manager.
      */
     private void initialize() {
         Log.d(TAG, "Initialization started ..........");

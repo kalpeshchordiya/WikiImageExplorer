@@ -160,6 +160,17 @@ public class WebViewActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+        mWebView.setVisibility(View.GONE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            finishAfterTransition();
+        } else {
+            finish();
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
         if (mWebView != null) {
             try {
                 mWebView.clearCache(true);
@@ -175,11 +186,6 @@ public class WebViewActivity extends AppCompatActivity {
             } catch (Exception e) {
                 mWebView = null;
             }
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            finishAfterTransition();
-        } else {
-            finish();
         }
     }
 

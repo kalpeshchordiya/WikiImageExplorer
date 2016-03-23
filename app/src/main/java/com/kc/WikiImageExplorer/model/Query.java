@@ -6,10 +6,10 @@ import java.util.Map;
 /**
  * Created by kalpesh.chordiya on 4/3/16.
  */
-public class Query implements Serializable{
+public class Query implements Serializable {
     private Map<String, PageObj> pages;
 
-    public  Map<String, PageObj> getPages() {
+    public Map<String, PageObj> getPages() {
         return pages;
     }
 
@@ -19,8 +19,6 @@ public class Query implements Serializable{
 
     @Override
     public String toString() {
-        return "Query{" +
-                "pages=" + pages +
-                '}';
+        return new StringBuilder("Query { pages=").append(pages).append("}").toString();
     }
 }

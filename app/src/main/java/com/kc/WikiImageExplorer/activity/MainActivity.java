@@ -28,6 +28,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.kc.WikiImageExplorer.R;
 import com.kc.WikiImageExplorer.controller.ControllerCallback;
 import com.kc.WikiImageExplorer.controller.NetworkRequestManager;

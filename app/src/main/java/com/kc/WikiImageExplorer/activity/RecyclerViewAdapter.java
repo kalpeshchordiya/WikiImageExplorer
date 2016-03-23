@@ -44,7 +44,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     public RecyclerViewHolders onCreateViewHolder(ViewGroup viewGroup, int i) {
         View layoutView = LayoutInflater.from(context).inflate(R.layout.grid_item, null);
         RecyclerViewHolders rcv = new RecyclerViewHolders(layoutView);
-        rcv.position = i;
         return rcv;
     }
 
@@ -90,7 +89,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
         ImageView pageThumbnail;
         TextView pageTitle;
-        int position;
 
         public RecyclerViewHolders(final View itemView) {
             super(itemView);

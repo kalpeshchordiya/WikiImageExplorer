@@ -3,7 +3,6 @@ package com.kc.WikiImageExplorer.controller;
 import java.lang.ref.WeakReference;
 
 import android.app.Activity;
-import android.os.Handler;
 import android.util.Log;
 
 public abstract class ControllerCallback {
@@ -14,20 +13,12 @@ public abstract class ControllerCallback {
      * remove activity on destroying from memory
      */
     WeakReference<Activity> mActivityReference = null;
-    WeakReference<Handler> mHandler = null;
 
     public ControllerCallback(Activity activity) {
         if (activity == null) {
             throw new NullPointerException();
         }
         mActivityReference = new WeakReference<Activity>(activity);
-    }
-
-    public ControllerCallback(Handler handler) {
-        if (handler == null) {
-            throw new NullPointerException();
-        }
-        mHandler = new WeakReference<Handler>(handler);
     }
 
     protected abstract void onSuccessResponse(int requestId, int status, Object data);
@@ -45,15 +36,6 @@ public abstract class ControllerCallback {
                 }
             });
             activity = null;
-            // Weak Reference NULL is Included to avoid Null Pointer Crash
-        } else if (null != mHandler && null != mHandler.get()) {
-            Handler handler = mHandler.get();
-            handler.post(new Runnable() {
-                public void run() {
-                    onSuccessResponse(requestId, status, data);
-                }
-            });
-            handler = null;
         } else {
             Log.e(TAG,
                     "Listner Object Reference is NULL now in SuccessResponse (Assuming Activity is destroyed)");
@@ -71,15 +53,6 @@ public abstract class ControllerCallback {
                 }
             });
             activity = null;
-            // Weak Reference NULL is Included to avoid Null Pointer Crash
-        } else if (null != mHandler && null != mHandler.get()) {
-            Handler handler = mHandler.get();
-            handler.post(new Runnable() {
-                public void run() {
-                    onErrorResponse(requestId, status, data);
-                }
-            });
-            handler = null;
         } else {
             Log.e(TAG,
                     "Listner Object Reference is NULL now in ErrorResponse (Assuming Activity is destroyed)");
